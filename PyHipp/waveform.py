@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 
-class waveform(DPT.DPObject):
+class Waveform(DPT.DPObject):
     # Please change the class name according to your needs
     filename = 'waveform.hkl'  # this is the filename that will be saved if it's run with saveLevel=1
     argsList = []  # these is where arguments used in the creation of the object are listed
