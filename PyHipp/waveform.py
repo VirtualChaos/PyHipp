@@ -113,35 +113,33 @@ class Waveform(DPT.DPObject):
             # second value is the current index of the item to plot
             if self.current_plot_type == plot_type:
                 if plot_type == 'Channel':
-                    print('test1', i)
+                    #print('test1', i)
                     return self.numSets, i
                 elif plot_type == 'Array':
-                    print('test2', i)
+                    #print('test2', i)
                     return len(self.array_dict), i
             elif self.current_plot_type == 'Array' and plot_type == 'Channel':
                 # add code to return number of channels and the appropriate
                 # channel number if the current array number is i
-                #self.current_plot_type = 'Channel'
-                print('test3', i)
-                
+                #print('test3', i)
                 if i == 0:
                     channel_number = 0
                 else:
                     channel_number = ref[i-1]+1
                 i = channel_number
-                print('channel is ', channel_number)
+                #print('channel is ', channel_number)
                 return self.numSets, i
             elif self.current_plot_type == 'Channel' and plot_type == 'Array':  
                 # add code to return number of arrays and the appropriate
                 # array number if the current channel number is i
-                self.current_plot_type = 'Array'
                 for j in range(len(ref)):
-                    if i < ref[j]:
+                    if i <= ref[j]:
                         i = j
                         break                        
-                print('test4', i, ref[i])
+                #print('test4', i, ref[i])
                 array_number = i
-                print('array is ',array_number)
+                #print('array is ',array_number)
+                self.current_plot_type = 'Array'
                 return len(self.array_dict), i
 
             return  # please return two items here: <total-num3ber-of-items-to-plot>, <current-item-index-to-plot>
@@ -160,8 +158,9 @@ class Waveform(DPT.DPObject):
             if self.current_plot_type == 'Array':
                 self.remove_subplots(fig)
                 ax = fig.add_subplot(1,1,1)
+                self.current_plot_type = 'Channel'
                 
-            self.plot_data(i, ax, plotOpts, 0)
+            self.plot_data(i, ax, plotOpts, 1)
         elif plot_type == 'Array':
             self.remove_subplots(fig)
             advals = np.array([*self.array_dict.values()])
@@ -171,7 +170,7 @@ class Waveform(DPT.DPObject):
             else:
                 cstart = advals[i-1]+1
             cend = advals[i] # set the ending index cend for array i
-            print(cstart,cend)
+            #print(cstart,cend)
             currch = cstart
             while currch <= cend :
                 # get channel name
@@ -181,7 +180,7 @@ class Waveform(DPT.DPObject):
                 self.plot_data(currch, ax, plotOpts, isCorner)
                 currch += 1
 
-        return ax
+        #return ax
     
     def plot_data(self, i, ax, plotOpts, isCorner):
         y = self.data[i]
@@ -192,11 +191,11 @@ class Waveform(DPT.DPObject):
             # set the title in this format: channelxxx, fill with zeros if the channel number is not three-digit
             ax.set_title(self.dirs[i])
             
-        if not plotOpts['LabelsOff']:  # if LabelsOff icon in the right-click menu is clicked
+        if not (not plotOpts['LabelsOff']) or isCorner:  # if LabelsOff icon in the right-click menu is clicked
             ax.set_xlabel('Time (sample unit)')
             ax.set_ylabel('Voltage (uV)')
               
-        if plotOpts['TicksOff']:
+        if plotOpts['TicksOff'] or (not isCorner):
             ax.set_xticklabels([])
             ax.set_yticklabels([])
             
